@@ -1,0 +1,29 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - AzureCloudEndpoints.BlazorServer/*
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: './AzureCloudEndpoints.BlazorServer/AzureCloudEndpoints.BlazorServer.csproj'
+    arguments: '-o "$(Pipeline.Workspace)/output" -c "Release"'
+    modifyOutputPath: false
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/output'
+    artifact: 'AzureCloudEndpoints.BlazorServer'
+    publishLocation: 'pipeline'
