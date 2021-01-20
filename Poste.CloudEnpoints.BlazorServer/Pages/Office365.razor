@@ -1,0 +1,116 @@
+﻿@page "/Office365"
+
+@using AzureCloudEndpoints.BlazorServer.Data
+@using AzureCloudEndpoints.BlazorServer.Model
+@inject EndpointService EndpointService
+
+<h1>Office 365 URls and Ips Adddress Range</h1>
+
+<p>Office 365 requires connectivity to the Internet. The endpoints below should be reachable for customers using Office 365 plans, including Government Community Cloud (GCC).</p>
+
+@if (endpoints == null && services == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<MatSelect Label="Select a service"  ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
+    @foreach (var service in services)
+        {
+        <MatOptionString Value="@service">@service</MatOptionString>
+        }
+</MatSelect>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>serviceArea</th>
+                <th>Description</th>
+                <th>urls</th>
+                <th>ips</th>
+                <th>tcpPorts</th>
+                <th>udpPorts</th>
+                <th>required</th>
+                <th>expressRoute</th>
+                <th>category</th>
+                <th>notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var endPoint in selectedEndpoints)
+            {
+                <tr>
+                    <td>@endPoint.serviceArea</td>
+                    <td>@endPoint.serviceAreaDisplayName</td>
+                    <td>
+                        @if (endPoint.urls != null)
+                        {
+                            <MatAccordion>
+                                <MatExpansionPanel>
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader>Urls</MatExpansionPanelHeader>
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+                                        <ul>
+                                            @foreach (var url in @endPoint.urls)
+                                            {
+                                                <li>@url</li>
+                                            }
+                                        </ul>
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+                            </MatAccordion>
+                        }
+                    </td>
+                    <td>
+                        @if (endPoint.ips != null)
+                        {
+                            <MatAccordion>
+                                <MatExpansionPanel>
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader>Ips</MatExpansionPanelHeader>
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+                                        <ul>
+                                            @foreach (var ip in @endPoint.ips)
+                                            {
+                                                <li>@ip</li>
+                                            }
+                                        </ul>
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+                            </MatAccordion>
+                        }
+                    </td>
+
+                    <td>@endPoint.tcpPorts</td>
+                    <td>@endPoint.udpPorts</td>
+                    <td>@endPoint.required</td>
+                    <td>@endPoint.expressRoute</td>
+                    <td>@endPoint.category</td>
+                    <td>@endPoint.notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Office365Endpoint[] endpoints;
+    private Office365Endpoint[] selectedEndpoints;
+    private string[] services;
+    private string selectedService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectedEndpoints = endpoints = await EndpointService.GetOffice365EndpointsAsync();
+        services = endpoints.Select(e => e.serviceArea).Distinct().ToArray();
+        selectedService = services.First();
+        selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
+    }
+
+    public void OnChangeService(string service)
+    {
+        selectedService = service;
+        selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
+    }
+}
