@@ -11,3 +11,12 @@ Documentation for Office 365:
 Documentation for Dynamics 365 and Power Platform:
 [Dynamics 365 Ip Addresses and Urls](https://docs.microsoft.com/en-us/power-platform/admin/online-requirements#ip-addresses-and-urls) 
 
+### Screenshots
+
+##### Azure Endpoints
+
+![Azure endpoints](https://github.com/pamontag/mscloudendpoints/screenshots/Azure.png?raw=true)
+
+##### Office 365 Endpoints
+
+![Office 365 endpoints](https://github.com/pamontag/mscloudendpoints/screenshots/Office365.jpg?raw=true)
