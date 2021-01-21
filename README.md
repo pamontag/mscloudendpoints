@@ -15,8 +15,8 @@ Documentation for Dynamics 365 and Power Platform:
 
 ##### Azure Endpoints
 
-![Azure endpoints](https://github.com/pamontag/mscloudendpoints/screenshots/Azure.png?raw=true)
+![Azure endpoints](https://github.com/pamontag/mscloudendpoints/blob/main/screenshots/Azure.png?raw=true)
 
 ##### Office 365 Endpoints
 
-![Office 365 endpoints](https://github.com/pamontag/mscloudendpoints/screenshots/Office365.jpg?raw=true)
+![Office 365 endpoints](https://github.com/pamontag/mscloudendpoints/blob/main/screenshots/Office365.jpg?raw=true)
