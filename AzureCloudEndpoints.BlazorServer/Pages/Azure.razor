@@ -4,6 +4,7 @@
 @using AzureCloudEndpoints.BlazorServer.Data
 @using AzureCloudEndpoints.BlazorServer.Model
 @inject EndpointService EndpointService
+@inject NavigationManager NavigationManager
 
 <h1>Azure IP Ranges</h1>
 
@@ -15,18 +16,24 @@
 }
 else
 {
-    <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
-        @foreach (var service in services)
-        {
-            <MatOptionString Value="@service">@service</MatOptionString>
-        }
-    </MatSelect>
-    <MatSelect Label="Select a region" ValueChanged="(string i) => OnChangeRegion(i)" Value="@selectedRegion">
-        @foreach (var region in regions)
-        {
-            <MatOptionString Value="@region">@region</MatOptionString>
-        }
-    </MatSelect>
+    <div>
+        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
+            @foreach (var service in services)
+            {
+                <MatOptionString Value="@service">@service</MatOptionString>
+            }
+        </MatSelect>
+        <MatSelect Label="Select a region" ValueChanged="(string i) => OnChangeRegion(i)" Value="@selectedRegion">
+            @foreach (var region in regions)
+            {
+                <MatOptionString Value="@region">@region</MatOptionString>
+            }
+        </MatSelect>
+
+        <button @onclick="OnClickDownloadButton">
+            <span class="oi oi-cloud-download" aria-hidden="true"></span> CSV
+        </button>
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -72,7 +79,7 @@ else
                             <MatAccordion>
                                 <MatExpansionPanel>
                                     <MatExpansionPanelSummary>
-                                        <MatExpansionPanelHeader>Network Features</MatExpansionPanelHeader>
+                                        <MatExpansionPanelHeader>Network</MatExpansionPanelHeader>
                                     </MatExpansionPanelSummary>
                                     <MatExpansionPanelDetails>
                                         <ul>
@@ -116,7 +123,7 @@ else
     {
         selectedService = service;
         selectedEndpoints = endpoints.Where(e => e.properties.systemService == selectedService && e.properties.region == selectedRegion).ToArray();
-        if(selectedEndpoints.Count() == 0)
+        if (selectedEndpoints.Count() == 0)
         {
             OnChangeRegion("global");
         }
@@ -126,5 +133,11 @@ else
     {
         selectedRegion = region;
         selectedEndpoints = endpoints.Where(e => e.properties.systemService == selectedService && e.properties.region == selectedRegion).ToArray();
+    }
+
+    void OnClickDownloadButton()
+    {
+        NavigationManager.NavigateTo($"api/download/{selectedService}/{selectedRegion}", true);
+
     }
 }

@@ -31,6 +31,7 @@ namespace AzureCloudEndpoints.BlazorServer
             services.AddServerSideBlazor();
             services.AddSingleton<EndpointService>();
             services.AddMatBlazor();
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +55,8 @@ namespace AzureCloudEndpoints.BlazorServer
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute("mvc", "{controller}/{action}");
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

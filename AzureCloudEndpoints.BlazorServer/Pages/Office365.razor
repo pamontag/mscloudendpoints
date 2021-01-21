@@ -2,7 +2,9 @@
 
 @using AzureCloudEndpoints.BlazorServer.Data
 @using AzureCloudEndpoints.BlazorServer.Model
+
 @inject EndpointService EndpointService
+@inject NavigationManager NavigationManager
 
 <h1>Office 365 URls and Ips Adddress Range</h1>
 
@@ -14,12 +16,19 @@
 }
 else
 {
-<MatSelect Label="Select a service"  ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
-    @foreach (var service in services)
-        {
-        <MatOptionString Value="@service">@service</MatOptionString>
-        }
-</MatSelect>
+    <div>
+        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
+            @foreach (var service in services)
+            {
+                <MatOptionString Value="@service">@service</MatOptionString>
+            }
+        </MatSelect>
+
+        
+        <button @onclick="OnClickDownloadButton">
+            <span class="oi oi-cloud-download" aria-hidden="true"></span> CSV
+        </button>
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -108,9 +117,15 @@ else
         selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
     }
 
-    public void OnChangeService(string service)
+    void OnChangeService(string service)
     {
         selectedService = service;
         selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
+    }
+
+    void OnClickDownloadButton()
+    {
+        NavigationManager.NavigateTo($"api/download/{selectedService}", true);
+
     }
 }
