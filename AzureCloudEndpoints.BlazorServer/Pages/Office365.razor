@@ -1,24 +1,17 @@
 ﻿@page "/Office365"
-
-@using AzureCloudEndpoints.BlazorServer.Data
-@using AzureCloudEndpoints.BlazorServer.Model
-
-@inject EndpointService EndpointService
-@inject NavigationManager NavigationManager
-
 <h1>Office 365 URls and Ips Address Range</h1>
 
 <p>Office 365 requires connectivity to the Internet. The endpoints below should be reachable for customers using Office 365 plans, including Government Community Cloud (GCC).</p>
 
-@if (endpoints == null && services == null)
+@if (Endpoints == null && Services == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <div>
-        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
-            @foreach (var service in services)
+        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@SelectedService">
+            @foreach (var service in Services)
             {
                 <MatOptionString Value="@service">@service</MatOptionString>
             }
@@ -45,7 +38,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var endPoint in selectedEndpoints)
+            @foreach (var endPoint in SelectedEndpoints)
             {
                 <tr>
                     <td>@endPoint.serviceArea</td>
@@ -101,31 +94,4 @@ else
             }
         </tbody>
     </table>
-}
-
-@code {
-    private Office365Endpoint[] endpoints;
-    private Office365Endpoint[] selectedEndpoints;
-    private string[] services;
-    private string selectedService;
-
-    protected override async Task OnInitializedAsync()
-    {
-        selectedEndpoints = endpoints = await EndpointService.GetOffice365EndpointsAsync();
-        services = endpoints.Select(e => e.serviceArea).Distinct().ToArray();
-        selectedService = services.First();
-        selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
-    }
-
-    void OnChangeService(string service)
-    {
-        selectedService = service;
-        selectedEndpoints = endpoints.Where(e => e.serviceArea == selectedService).ToArray();
-    }
-
-    void OnClickDownloadButton()
-    {
-        NavigationManager.NavigateTo($"api/download/{selectedService}", true);
-
-    }
 }

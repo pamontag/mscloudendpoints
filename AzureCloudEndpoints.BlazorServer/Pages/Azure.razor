@@ -1,30 +1,23 @@
 ﻿@page "/Azure"
-
-
-@using AzureCloudEndpoints.BlazorServer.Data
-@using AzureCloudEndpoints.BlazorServer.Model
-@inject EndpointService EndpointService
-@inject NavigationManager NavigationManager
-
 <h1>Azure IP Ranges</h1>
 
 <p>IP address ranges for Public Azure as a whole, each Azure region within Public, and ranges for several Azure Services (Service Tags) such as Storage, SQL and AzureTrafficManager in Public. </p>
 
-@if (endpoints == null && services == null)
+@if (Endpoints == null && Services == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <div>
-        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@selectedService">
-            @foreach (var service in services)
+        <MatSelect Label="Select a service" ValueChanged="(string i) => OnChangeService(i)" Value="@SelectedService">
+            @foreach (var service in Services)
             {
                 <MatOptionString Value="@service">@service</MatOptionString>
             }
         </MatSelect>
-        <MatSelect Label="Select a region" ValueChanged="(string i) => OnChangeRegion(i)" Value="@selectedRegion">
-            @foreach (var region in regions)
+        <MatSelect Label="Select a region" ValueChanged="(string i) => OnChangeRegion(i)" Value="@SelectedRegion">
+            @foreach (var region in Regions)
             {
                 <MatOptionString Value="@region">@region</MatOptionString>
             }
@@ -46,7 +39,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var endPoint in selectedEndpoints)
+            @foreach (var endPoint in SelectedEndpoints)
             {
                 <tr>
                     <td>@endPoint.properties.systemService</td>
@@ -98,46 +91,4 @@ else
         </tbody>
     </table>
 }
-
-@code {
-    private AzureEndpoint[] endpoints;
-    private AzureEndpoint[] selectedEndpoints;
-    private string[] services;
-    private string selectedService;
-    private string[] regions;
-    private string selectedRegion;
-
-    protected override async Task OnInitializedAsync()
-    {
-        endpoints = (await EndpointService.GetAzureEndpointsAsync()).values.ToArray();
-        endpoints.Where(e => e.properties.region == "").ToList().ForEach(e => e.properties.region = "global");
-        endpoints.Where(e => e.properties.systemService == "").ToList().ForEach(e => e.properties.systemService = "AzureCloud");
-        services = endpoints.Select(e => e.properties.systemService).Distinct().OrderBy(e => e).ToArray();
-        selectedService = services.Single(r => r == "AzureCloud");
-        regions = endpoints.Select(e => e.properties.region).Distinct().OrderBy(e => e).ToArray();
-        selectedRegion = regions.Single(r => r == "westeurope");
-        selectedEndpoints = endpoints.Where(e => e.properties.systemService == selectedService && e.properties.region == selectedRegion).ToArray();
-    }
-
-    public void OnChangeService(string service)
-    {
-        selectedService = service;
-        selectedEndpoints = endpoints.Where(e => e.properties.systemService == selectedService && e.properties.region == selectedRegion).ToArray();
-        if (selectedEndpoints.Count() == 0)
-        {
-            OnChangeRegion("global");
-        }
-    }
-
-    public void OnChangeRegion(string region)
-    {
-        selectedRegion = region;
-        selectedEndpoints = endpoints.Where(e => e.properties.systemService == selectedService && e.properties.region == selectedRegion).ToArray();
-    }
-
-    void OnClickDownloadButton()
-    {
-        NavigationManager.NavigateTo($"api/download/{selectedService}/{selectedRegion}", true);
-
-    }
-}
+ 
